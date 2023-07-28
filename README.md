@@ -6,9 +6,13 @@
 clear all
 close all
 img = imread('./data/a0-64.png');
-% img1 = imread('./data/a1-64.png');
+
+% img1 = imread('./data/a1-64.png')
+
 % figure(10)
+
 imtool(img,[]);
+
 [A,B] = interpolation_2d('./data/a0-64.png',5);
 figure(10)
 imshow(A,[]);
@@ -19,6 +23,7 @@ imshow(B,[]);
 % figure(10)
 
 % imwrite(uint8(A),'./a.bmp');
+
 % imwrite(uint8(B),'./b.bmp');
 % 
 % figure
@@ -32,10 +37,14 @@ max_iter=27;
 w=linspace(0.99,0.1,max_iter);
 
 for  i = 1:max_iter
+
     if mod(i,2)==1
+    
            C = multi_blend(C,B,w(i));
+           
     else
            C = multi_blend(C,A,w(i));
+           
     end
     
   
