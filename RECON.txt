@@ -1,0 +1,215 @@
+
+% function C = multi_blend(A,B,wB)
+%  
+% %resize A,B,C to the same size
+% A_size = size(A);
+% B_size = size(B);
+% C_size = [384,384];%目标体的图像尺寸
+% if(A_size ~= C_size)
+%     A = imresize(A,C_size);
+% end
+% if(B_size ~= C_size)
+%     B = imresize(B,C_size);
+% end
+%  
+% %gaussian kernel
+% kernel=fspecial('gaussian',5,1);
+%  
+% %obtain the Gauss Pyramid
+% G_A0 = double(A);
+% G_A1 = imfilter(G_A0,kernel,'same');
+% G_A1 = imresize(G_A1,0.5,"Antialiasing",false);% imresize(A,0.5,Antialiasing=false)
+% G_A2 = imfilter(G_A1,kernel,'same');
+% G_A2 = imresize(G_A2,0.5,"Antialiasing",false);
+% G_A3 = imfilter(G_A2,kernel,'same');
+% G_A3 = imresize(G_A3,0.5,"Antialiasing",false);
+% G_A4 = imfilter(G_A3,kernel,'same');
+% G_A4 = imresize(G_A4,0.5,"Antialiasing",false);
+% G_A5 = imfilter(G_A4,kernel,'same');
+% G_A5 = imresize(G_A5,0.5,"Antialiasing",false);
+% 
+% %%B
+% G_B0 = double(B);
+% G_B1 = imfilter(G_B0,kernel,'same');
+% G_B1 = imresize(G_B1,0.5,"Antialiasing",false);
+% 
+% G_B2 = imfilter(G_B1,kernel,'same');
+% G_B2 = imresize(G_B2,0.5,"Antialiasing",false);
+% G_B3 = imfilter(G_B2,kernel,'same');
+% G_B3 = imresize(G_B3,0.5,"Antialiasing",false);
+% G_B4 = imfilter(G_B3,kernel,'same');
+% G_B4 = imresize(G_B4,0.5,"Antialiasing",false);
+% G_B5 = imfilter(G_B4,kernel,'same');
+% G_B5 = imresize(G_B5,0.5,"Antialiasing",false);
+%  
+% %get Laplacian Pyramid
+% L_A0 = double(G_A0)-imresize(G_A1,size(G_A0));
+% L_A1 = double(G_A1)-imresize(G_A2,size(G_A1));
+% % subplot(131);imshow(L_A0);
+% L_A2 = double(G_A2)-imresize(G_A3,size(G_A2));
+% L_A3 = double(G_A3)-imresize(G_A4,size(G_A3));
+% L_A4 = double(G_A4)-imresize(G_A5,size(G_A4));
+% L_A5 = double(G_A5);
+% 
+% % figure 
+% % imshow(uint8(L_A4));
+% % figure 
+% % imshow(uint8(L_A5));
+% 
+% L_B0 = double(G_B0)-imresize(G_B1,size(G_B0));
+% % subplot(132);imshow(L_B0);
+% % subplot(133);imshow(L_B0+L_A0);
+% L_B1 = double(G_B1)-imresize(G_B2,size(G_B1));
+% L_B2 = double(G_B2)-imresize(G_B3,size(G_B2));
+% L_B3 = double(G_B3)-imresize(G_B4,size(G_B3));
+% L_B4 = double(G_B4)-imresize(G_B5,size(G_B4));
+% L_B5 = double(G_B5);
+% 
+% 
+% %%
+% %计算高斯卷积核
+% K = fspecial('gaussian',5,1);
+% w1=abs(double(A-imfilter(A,K)));
+% w2=abs(double(B-imfilter(B,K)))*wB;
+% 
+% % sum=w1+w2;
+% % w1 = w1./sum;
+% % w2 = w2./sum;
+% 
+% G_W1 = w1;%设置权重mask
+% G_W2 = imfilter(G_W1,kernel,'same');%高斯模糊
+% G_W2 = imresize(G_W2,0.5,"Antialiasing",false);%缩小一倍
+% 
+% G_W3 = imfilter(G_W2,kernel,'same');
+% G_W3 = imresize(G_W3,0.5,"Antialiasing",false);
+% 
+% G_W4 = imfilter(G_W3,kernel,'same');
+% G_W4 = imresize(G_W4,0.5,"Antialiasing",false);
+% 
+% G_W4 = imfilter(G_W4,kernel,'same');
+% G_W5 = imresize(G_W4,0.5,"Antialiasing",false);
+% 
+% G_W6 = imfilter(G_W5,kernel,'same');
+% G_W6 = imresize(G_W6,0.5,"Antialiasing",false);
+% 
+% % subplot(161);imshow(G_W1,[]);title('G_W1');
+% % subplot(162);imshow(G_W2,[]);title('G_W2');
+% % subplot(163);imshow(G_W3,[]);title('G_W3');
+% % subplot(164);imshow(G_W4,[]);title('G_W4');
+% % subplot(165);imshow(G_W5,[]);title('G_W5');
+% % subplot(166);imshow(G_W6,[]);title('G_W6');
+% 
+% G_Wb_1 = w2;%设置权重mask
+% G_Wb_2 = imfilter(G_Wb_1,kernel,'same');%高斯模糊
+% G_Wb_2 = imresize(G_Wb_2,0.5,"Antialiasing",false);%缩小一倍
+% 
+% G_Wb_3 = imfilter(G_Wb_2,kernel,'same');
+% G_Wb_3 = imresize(G_Wb_3,0.5,"Antialiasing",false);
+% 
+% G_Wb_4 = imfilter(G_Wb_3,kernel,'same');
+% G_Wb_4 = imresize(G_Wb_4,0.5,"Antialiasing",false);
+% % 
+% G_Wb_5 = imfilter(G_Wb_4,kernel,'same');
+% G_Wb_5 = imresize(G_Wb_5,0.5,"Antialiasing",false);
+% 
+% G_Wb_6 = imfilter(G_Wb_5,kernel,'same');
+% G_Wb_6 = imresize(G_Wb_6,0.5,"Antialiasing",false);
+% % 
+% 
+% % subplot(161);imshow(G_Wb_1,[]);title('G_Wb_1');
+% % subplot(162);imshow(G_Wb_2,[]);title('G_Wb_2');
+% % subplot(163);imshow(G_Wb_3,[]);title('G_Wb_3');
+% % subplot(164);imshow(G_Wb_4,[]);title('G_Wb_4');
+% % subplot(165);imshow(G_Wb_5,[]);title('G_Wb_5');
+% % subplot(166);imshow(G_Wb_6,[]);title('G_Wb_6');
+% 
+% %权重的归一化
+% G_W1_temp = G_W1./(G_W1+G_Wb_1);
+% G_Wb_1_temp = G_Wb_1./(G_W1+G_Wb_1);
+% 
+% G_W2_temp = G_W2./(G_W2+G_Wb_2);
+% G_Wb_2_temp = G_Wb_2./(G_W2+G_Wb_2);
+% 
+% G_W3_temp = G_W3./(G_W3+G_Wb_3);
+% G_Wb_3_temp = G_Wb_3./(G_W3+G_Wb_3);
+% 
+% G_W4_temp = G_W4./(G_W4 + G_Wb_4);
+% G_Wb_4_temp = G_Wb_4 ./(G_W4 + G_Wb_4);
+% 
+% G_W5_temp = G_W5 ./(G_W5+G_Wb_5);
+% G_Wb_5_temp = G_Wb_5 ./(G_W5+G_Wb_5);
+% 
+% G_W6_temp = G_W6./(G_Wb_6 + G_W6);
+% G_Wb_6_temp = G_Wb_6./(G_Wb_6 + G_W6);
+% % subplot(151);imshow(G_W1,[]);title('G_W1');
+% % subplot(152);imshow(G_W2,[]);title('G_W2');
+% % subplot(153);imshow(G_W3,[]);title('G_W3');
+% % subplot(154);imshow(G_W4,[]);title('G_W4');
+% % subplot(155);imshow(G_W5,[]);title('G_W5');
+% 
+% 
+% %%
+% %%图像恢复
+% %obtain the output %5 is min / 0 is max
+% L_C0 = L_A0 .* G_W1_temp + L_B0 .* (G_Wb_1_temp);
+% L_C1 = L_A1 .* G_W2_temp + L_B1 .* (G_Wb_2_temp);
+% L_C2 = L_A2 .* G_W3_temp + L_B2 .* (G_Wb_3_temp);
+% L_C3 = L_A3 .* G_W4_temp + L_B3 .* (G_Wb_4_temp);
+% L_C4 = L_A4 .* G_W5_temp + L_B4 .* (G_Wb_5_temp); 
+% L_C5 = L_A5 .* G_W6_temp + L_B5 .* (G_Wb_6_temp);
+% 
+% % subplot(151);imshow(L_C5,[]);title('L_C5');
+% % subplot(152);imshow(L_C4,[]);title('L_C4');
+% % subplot(153);imshow(L_C3,[]);title('L_C3');
+% % subplot(154);imshow(L_C2,[]);title('L_C2');
+% % subplot(155);imshow(L_C1,[]);title('L_C1');
+% 
+% 
+% 
+% 
+% % 
+% 
+% % single pic 可以恢复
+% % figure
+% % imshow(uint8(G_A5));
+% % title('G_A5');
+% % figure
+% % imshow(uint8(L_C4));
+% % title('L_A4');
+% % out_5 = L_A5 + G_A5;
+% % out_4 = L_A3 + imresize(out_5,size(L_A3));
+% % out_3 = L_A2 + imresize(out_4,size(L_A2));
+% % out_2 = L_A1 + imresize(out_3,size(L_A1));
+% % out_1 = L_A0 + imresize(out_2,size(L_A0));
+% %%
+% % recon
+% 
+% out_5 = L_C5 + (G_A5);
+% out_4 = L_C4 + imresize(out_5,size(L_C4));
+% out_3 = L_C3 + imresize(out_4,size(L_C3));
+% out_2 = L_C2 + imresize(out_3,size(L_C2));
+% out_1 = L_C1 + imresize(out_2,size(L_C1));
+% out_0 = L_C0 + imresize(out_1,size(L_C0));
+% out_0(isnan(out_0))=0;
+% C = out_0;
+% % figure
+% % imtool((out_0),[]);
+% % title('out_0')
+% % figure
+% % imshow((B),[]);
+% % title('B')
+% 
+% %%
+% %灰度校正
+% 
+% 
+% %%
+% % 计算两张图像之间的 SSIM
+% % 计算均方误差
+% mse = immse(out_0, double(A));
+% % [ssim_value, ssim_map] = ssim(out_0, double(A));
+% 
+% % 显示 SSIM 值
+% fprintf('mse between the two images: %f\n', mse);
+% %  
+% end
