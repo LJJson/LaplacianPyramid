@@ -10,12 +10,14 @@ img = imread('./data/a0-64.png');
 % figure(10)
 imtool(img,[]);
 [A,B] = interpolation_2d('./data/a0-64.png',5);
-
 figure(10)
 imshow(A,[]);
 figure(9)
+
 imshow(B,[]);
+
 % figure(10)
+
 % imwrite(uint8(A),'./a.bmp');
 % imwrite(uint8(B),'./b.bmp');
 % 
